@@ -15,6 +15,7 @@ library(maps)
 
 #####################################################################
 ############## Ciudades #############################################
+
 data(world.cities)
 world.cities = world.cities[world.cities$pop >= 100000,]
 paises_hisp = c("Argentina", "Bolivia", "Chile", "Colombia", "Costa Rica","Cuba",
@@ -106,9 +107,6 @@ process_con_na = function(nombre_archivo){
   data$statuses_count = NULL
   data = data.table(data)
   
-  #### Filtrado
-  #data = data[frec_twits >= 1 | frec_favs >= 1 | V16 == 0 | V13 == TRUE,]
-  
   ##### Lenguaje descripcion
   lang1 = cld2::detect_language(text = data[,V5], plain_text = FALSE)
   lang2 = cld3::detect_language(text = data[,V5])
@@ -156,56 +154,55 @@ process_con_na = function(nombre_archivo){
 
 
 #########################################################
-#################### magufos ###########################
+#################### Pseudoscience ######################
 
 data = data.table::fread('naukas.nodes.csv')
 data = data[community_id =='magufos',]
 data = data[protected == FALSE,]
-# 
-# write.csv(data,'magufos.csv',row.names = FALSE,col.names = FALSE)
-# data = data.table::fread('magufos.csv')
-# data_pro = process_con_na('magufos.csv')
-# 
-# data_pro = data_pro[,V10 := NULL]
-# data_pro = data_pro[,V11 := NULL]
-# data_pro = data_pro[,lang1 := NULL]
-# data_pro = data_pro[,lang2 := NULL]
+
+write.csv(data,'magufos.csv',row.names = FALSE,col.names = FALSE)
+data = data.table::fread('magufos.csv')
+data_pro = process_con_na('magufos.csv')
+
+data_pro = data_pro[,V10 := NULL]
+data_pro = data_pro[,V11 := NULL]
+data_pro = data_pro[,lang1 := NULL]
+data_pro = data_pro[,lang2 := NULL]
 
 
 # write.csv(data_pro,'magufosPro.csv',row.names = FALSE,col.names = FALSE)
 
 
-
 ###########################################
 ############### Naukas ###################
 
-# data = data.table::fread('naukas.nodes.csv')
-# data = data[community_id =='Naukas',]
-# data = data[protected == FALSE,]
-# data = data[-1,] #eliminamos a i?aki
+data = data.table::fread('naukas.nodes.csv')
+data = data[community_id =='Naukas',]
+data = data[protected == FALSE,]
+data = data[-1,] #eliminamos a i?aki
 
-# data = data[(lang == '')|(is.na(lang)),]
+data = data[(lang == '')|(is.na(lang)),]
 
 
 
 # write.csv(data,'naukasNA.csv',row.names = FALSE,col.names = FALSE)
 # write.csv(data,'naukas.csv',row.names = FALSE,col.names = FALSE)
 
-# data_pro = process_sin_na('naukas.csv')
-# data_pro2 = process_con_na('naukasNA.csv')
+data_pro = process_sin_na('naukas.csv')
+data_pro2 = process_con_na('naukasNA.csv')
 
 # write.csv(data_pro,'naukasSinNApro.csv',row.names = FALSE,col.names = FALSE)
 # write.csv(data_pro2,'naukasNApro.csv',row.names = FALSE,col.names = FALSE)
 
-# data_pro = data.table::fread('naukasSinNApro.csv')
-# data_pro = data_pro[V7 >= 100 | V16 == 0,]
+data_pro = data.table::fread('naukasSinNApro.csv')
+data_pro = data_pro[V7 >= 100 | V16 == 0,]
 
-# data_pro2 = data_pro2[,V10 := NULL]
-# data_pro2 = data_pro2[,V11 := NULL]
-# data_pro2 = data_pro2[,lang1 := NULL]
-# data_pro2 = data_pro2[,lang2 := NULL]
-# 
-# data_final = rbind(data_pro,data_pro2)
+data_pro2 = data_pro2[,V10 := NULL]
+data_pro2 = data_pro2[,V11 := NULL]
+data_pro2 = data_pro2[,lang1 := NULL]
+data_pro2 = data_pro2[,lang2 := NULL]
+
+data_final = rbind(data_pro,data_pro2)
 
 # write.csv(data_final,'naukasFinal.csv',row.names = FALSE,col.names = FALSE)
 
@@ -230,7 +227,7 @@ nodes = data.table::fread('nodes_final.csv')
 nodes[V1 == 463259699,]
 
 ##################################################################
-
+###################### Components #################################
 edges = data.table::fread('edges_final.csv')
 unicos = unique(c(edges[,from], edges[,to]))
 
@@ -241,7 +238,7 @@ nrow(magufos)
 sum(magufos[,V1] %in% unicos) #cuantos perd?
 
 ##################################################################
-
+##################### Modularity #################################
 modus = data.table::fread('modus.csv')
 modus = modus[,c(1,4)]
 
@@ -259,6 +256,7 @@ for(i in 0:19){
 percentages
 
 ########################################################
+##################### Degreee #########################
 library(igraph)
 
 ids = modus[modularity_class == 18,Id]
@@ -387,6 +385,7 @@ ids_2 = as.integer64(ids_2)
 
 
 data_int = nodes[V1 %in% ids_2,]
+
 #######################################
 ######### Degree dist #################
 
